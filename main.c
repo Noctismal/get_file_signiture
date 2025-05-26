@@ -22,25 +22,31 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    // Working with only one file atm TODO 
-    struct file_info *f1 = get_file_info(argv[1]);
+    for (int i = 1; i < argc; i++) {
+        struct file_info *file = get_file_info(argv[i]);
+        
+        if (file == NULL) {
+            fprintf(stderr, "File: %s is not a file or could not be opened.\n", file->f_name);
+            continue;
+        }
 
-    printf("%s\n", f1->f_name);
-
-    for (int i = 0; i < 7; i++) {
-        printf("%02X ", f1->sig[i]);
-    };
-
+        printf("File name: %s\nFile Signiture: ", file->f_name);
+        
+        for (int s = 0; s < 7; s++) {
+         printf("%02X ", file->sig[s]);
+        }
+        printf("\n");
+    }
     return 0;
 }
-
+ 
 void *allocate(size_t size) {
     void *ptr = malloc(size);
 
     if (ptr == NULL) {
         fprintf(stderr, "Error malloc failled\n");
         exit(1);
-    };
+    }
 
     return ptr;
 }
@@ -62,8 +68,8 @@ unsigned char *get_sig(char *file) {
 
     if (f == NULL) {
         fprintf(stderr, "Error opening file: %s\n", file);
-        exit(1);
-    };
+        return NULL;
+    }
 
     fread(buff, 8, 1, f);
 
